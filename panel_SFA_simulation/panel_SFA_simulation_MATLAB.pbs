@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -P Eff_Dens_1
+#PBS -l select=1:ncpus=4:mem=10GB
+#PBS -l walltime=96:00:00
+#PBS -M rjam3686@uni.sydney.edu.au
+#PBS -m abe
+#PBS -J 1-19
+
+cd $PBS_O_WORKDIR
+
+module load matlab/R2020a
+
+config=simulation_config.config
+N=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $2}' $config)
+T=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $3}' $config)
+rho1=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $4}' $config)
+copula=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $5}' $config)
+echo N=$n, T=T, rho_1=$rho1 copula=$copula >> file_mapping.txt
+
+matlab -nodisplay -batch "panel_SFA_simulation($N, $T, $rho1, '$copula');"
+
+

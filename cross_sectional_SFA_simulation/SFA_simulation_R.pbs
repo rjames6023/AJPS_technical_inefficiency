@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -P Eff_Dens_1
+#PBS -l select=1:ncpus=12:mem=10GB
+#PBS -l walltime=72:00:00
+#PBS -M rjam3686@uni.sydney.edu.au
+#PBS -m abe
+#PBS -J 1-90
+
+cd $PBS_O_WORKDIR
+
+module load R/3.6.0
+module load matlab/R2020a
+
+config=simulation_config.config
+n=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $2}' $config)
+rho_u_w1=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $3}' $config)
+rho_u_w2=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $4}' $config)
+rho_u_w3=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $5}' $config)
+rho_w1_w2=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $6}' $config)
+rho_w1_w3=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $7}' $config)
+rho_w2_w3=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $8}' $config)
+copula=$(awk -v taskID=$PBS_ARRAY_INDEX '$1==taskID {print $9}' $config)
+echo n=$n, rho_u_w1=$rho_u_w1, rho_u_w2=$rho_u_w2, rho_u_w3=$rho_u_w3, rho_w1_w2=$rho_w1_w2, rho_w1_w3=$rho_w1_w3, rho_w2_w3=$rho_w2_w3 copula=$copula >> file_mapping.txt
+
+matlab -nodisplay -batch "SFA_simulation($n,'$rho_u_w1','$rho_u_w2','$rho_u_w3','$rho_w1_w2','$rho_w1_w3','$rho_w2_w3','$copula');"
+Rscript train_LocalLinear_forest.R $n $rho_u_w1 $rho_u_w2 $rho_u_w3 $rho_w1_w2 $rho_w1_w3 $rho_w2_w3 $copula "SFA"
+
+
