@@ -1,1 +1,1 @@
-The repository contains the code for the paper "mproving Predictions of Technical Inefficiency" (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4028125) (Amsler, James, Prokhorov and Schmidt, 2022).
+The repository contains the code for the paper "Improving Predictions of Technical Inefficiency" (https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4028125) (Amsler, James, Prokhorov and Schmidt, 2022).
